@@ -7,8 +7,8 @@ export function MethodologyPanel() {
         readable museum labels. Region/flag indicates publisher origin or primary cultural market.
       </p>
       <p>
-        Neon rings mark selected exhibits. Dimmed stations are hidden by filters but remain in place so the gallery
-        layout stays stable. Cover art is generated placeholder styling, not licensed artwork.
+        Neon rings mark selected exhibits. Filters hide inactive exhibit cards and leave lightweight floor markers so
+        the gallery layout stays stable. Cover art is generated placeholder styling, not licensed artwork.
       </p>
     </aside>
   )

@@ -1,6 +1,7 @@
-import { Environment, OrbitControls } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useMemo, useRef } from 'react'
+import gsap from 'gsap'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useMuseumStore } from '../store/useMuseumStore'
 import { ExhibitStation } from './ExhibitStation'
@@ -10,14 +11,36 @@ function CameraRig() {
   const controls = useRef()
   const { camera } = useThree()
   const cameraTarget = useMuseumStore((state) => state.cameraTarget)
+  const animatedTarget = useRef(new THREE.Vector3(...cameraTarget.target))
+
+  useEffect(() => {
+    const positionTween = gsap.to(camera.position, {
+      x: cameraTarget.position[0],
+      y: Math.max(cameraTarget.position[1], 1.45),
+      z: cameraTarget.position[2],
+      duration: 1.25,
+      ease: 'power3.inOut',
+      overwrite: true,
+    })
+    const targetTween = gsap.to(animatedTarget.current, {
+      x: cameraTarget.target[0],
+      y: cameraTarget.target[1],
+      z: cameraTarget.target[2],
+      duration: 1.25,
+      ease: 'power3.inOut',
+      overwrite: true,
+    })
+
+    return () => {
+      positionTween.kill()
+      targetTween.kill()
+    }
+  }, [camera, cameraTarget])
 
   useFrame(() => {
-    const nextPosition = new THREE.Vector3(...cameraTarget.position)
-    const nextTarget = new THREE.Vector3(...cameraTarget.target)
-    camera.position.lerp(nextPosition, 0.055)
     camera.position.y = Math.max(camera.position.y, 1.45)
     if (controls.current) {
-      controls.current.target.lerp(nextTarget, 0.07)
+      controls.current.target.copy(animatedTarget.current)
       controls.current.update()
     }
   })
@@ -26,7 +49,7 @@ function CameraRig() {
     <OrbitControls
       ref={controls}
       enableDamping
-      dampingFactor={0.08}
+      dampingFactor={0.06}
       minDistance={4}
       maxDistance={24}
       minPolarAngle={0.22}
@@ -49,7 +72,7 @@ function MuseumArchitecture() {
   return (
     <group>
       <mesh receiveShadow rotation-x={-Math.PI / 2} material={floorMaterial}>
-        <planeGeometry args={[24, 20, 1, 1]} />
+        <planeGeometry args={[26, 21, 1, 1]} />
       </mesh>
       <mesh receiveShadow position={[0, 2.2, -8.5]} material={wallMaterial}>
         <boxGeometry args={[24, 4.4, 0.4]} />
@@ -78,33 +101,31 @@ function MuseumArchitecture() {
   )
 }
 
-function Lights({ games }) {
+function Lights({ selectedGame }) {
+  const [x, , z] = getExhibitPosition(selectedGame.rank)
+
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <hemisphereLight args={['#445d88', '#090b12', 1.1]} />
+      <ambientLight intensity={0.5} />
+      <hemisphereLight args={['#6d87b8', '#090b12', 0.95]} />
       <directionalLight
         castShadow
-        position={[3, 8, 5]}
-        intensity={1.4}
-        shadow-mapSize-width={2048}
-        shadow-mapSize-height={2048}
+        position={[4, 8, 6]}
+        intensity={1.8}
+        shadow-mapSize-width={1024}
+        shadow-mapSize-height={1024}
       />
-      {games.map((game) => {
-        const [x, , z] = getExhibitPosition(game.rank)
-        return (
-          <spotLight
-            key={game.rank}
-            position={[x, 5.8, z + 0.9]}
-            angle={0.34}
-            penumbra={0.65}
-            intensity={1.35}
-            distance={9}
-            color={game.accent}
-            castShadow={game.rank <= 4}
-          />
-        )
-      })}
+      <spotLight position={[-7, 6, -6]} angle={0.48} penumbra={0.85} intensity={1.5} distance={15} color="#5fdcff" />
+      <spotLight position={[7, 6, 3]} angle={0.52} penumbra={0.85} intensity={1.2} distance={15} color="#9ae8ff" />
+      <spotLight
+        castShadow
+        position={[x, 5.8, z + 1.2]}
+        angle={0.38}
+        penumbra={0.65}
+        intensity={2.35}
+        distance={10}
+        color={selectedGame.accent}
+      />
     </>
   )
 }
@@ -117,7 +138,7 @@ export function MuseumScene({ games }) {
   return (
     <>
       <CameraRig />
-      <Lights games={games} />
+      <Lights selectedGame={selectedGame} />
       <MuseumArchitecture />
       <group>
         {games.map((game) => {
@@ -140,7 +161,6 @@ export function MuseumScene({ games }) {
         <ringGeometry args={[1.8, 1.95, 48]} />
         <meshBasicMaterial color={selectedGame.accent} transparent opacity={0.55} />
       </mesh>
-      <Environment preset="night" />
     </>
   )
 }

@@ -15,7 +15,7 @@ function TourController() {
 
   useEffect(() => {
     if (!isTouring) return undefined
-    const interval = window.setInterval(next, 4200)
+    const interval = window.setInterval(() => next({ keepTour: true }), 4600)
     return () => window.clearInterval(interval)
   }, [isTouring, next])
 
@@ -44,8 +44,9 @@ export default function App() {
       <section className="scene-shell" aria-label="Interactive 3D game sales museum">
         <Canvas
           shadows
-          camera={{ position: [0, 8.5, 16], fov: 48, near: 0.1, far: 100 }}
-          gl={{ antialias: true }}
+          dpr={[1, 1.5]}
+          camera={{ position: [0, 6.6, 13.8], fov: 43, near: 0.1, far: 100 }}
+          gl={{ antialias: true, powerPreference: 'high-performance' }}
         >
           <color attach="background" args={['#05070d']} />
           <fog attach="fog" args={['#05070d', 18, 42]} />

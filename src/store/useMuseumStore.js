@@ -2,8 +2,8 @@ import { create } from 'zustand'
 import { games } from '../data/games'
 
 const defaultCamera = {
-  position: [0, 8.5, 16],
-  target: [0, 0.8, 0],
+  position: [0, 6.6, 13.8],
+  target: [0, 1.1, -0.5],
 }
 
 const getVisibleGames = (filters) =>
@@ -65,10 +65,11 @@ export const useMuseumStore = create((set, get) => ({
       cameraMode: 'exhibit',
     })
   },
-  next: () => {
+  next: ({ keepTour = false } = {}) => {
     const state = get()
     set({
       selectedRank: findNextRank(state.selectedRank, state.filters, 1),
+      isTouring: keepTour ? state.isTouring : false,
       jumpNotice: '',
       cameraMode: 'exhibit',
     })
@@ -77,6 +78,7 @@ export const useMuseumStore = create((set, get) => ({
     const state = get()
     set({
       selectedRank: findNextRank(state.selectedRank, state.filters, -1),
+      isTouring: false,
       jumpNotice: '',
       cameraMode: 'exhibit',
     })
@@ -88,6 +90,7 @@ export const useMuseumStore = create((set, get) => ({
     set({
       filters: nextFilters,
       selectedRank: selectedStillVisible ? get().selectedRank : visible[0]?.rank ?? get().selectedRank,
+      isTouring: false,
       jumpNotice: visible.length ? '' : 'No exhibits match these filters.',
       cameraMode: visible.length ? 'exhibit' : 'overview',
     })

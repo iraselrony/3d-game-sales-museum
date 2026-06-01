@@ -18,11 +18,11 @@ export const getExhibitPosition = (rank) => exhibitPositions[rank - 1] ?? [0, 0,
 export const getCameraForExhibit = (rank) => {
   const [x, , z] = getExhibitPosition(rank)
   const centerPull = Math.atan2(-z, -x)
-  const distance = 4.7
+  const distance = 5.25
   const cameraX = x + Math.cos(centerPull) * distance
   const cameraZ = z + Math.sin(centerPull) * distance
   return {
-    position: [cameraX, 3.1, cameraZ],
-    target: [x, 1.35, z],
+    position: [cameraX, 3.45, cameraZ],
+    target: [x, 1.45, z],
   }
 }

@@ -16,14 +16,6 @@ function CoverFace({ game, isSelected }) {
           emissiveIntensity={isSelected ? 0.2 : 0.06}
         />
       </mesh>
-      <mesh position={[0.18, 0.2, 0.065]} rotation-z={-0.35}>
-        <boxGeometry args={[1.16, 0.4, 0.035]} />
-        <meshBasicMaterial color={game.cover.gradient[1]} transparent opacity={0.9} />
-      </mesh>
-      <mesh position={[-0.32, -0.38, 0.07]} rotation-z={0.28}>
-        <boxGeometry args={[0.82, 0.28, 0.04]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.14} />
-      </mesh>
       <mesh position={[0, 0, 0.073]} rotation-z={0.78}>
         <ringGeometry args={[0.34, 0.37, 36]} />
         <meshBasicMaterial color="#ffffff" transparent opacity={0.25} />
